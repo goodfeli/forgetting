@@ -2,6 +2,8 @@
         dataset: !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {
             preprocessed_dataset: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/train.pkl",
             preprocessor: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/preprocessor.pkl",
+            start: 0,
+            stop: 4000,
             axes: ['c', 0, 1, 'b']
     },
     model: !obj:pylearn2.models.mlp.MLP {
@@ -55,7 +57,7 @@
                     layer_name: 'h3',
                     %(h3_init)s,
                     num_units: %(h3_num_units)i,
-                    num_pieces: (h3_num_pieces)i,
+                    num_pieces: %(h3_num_pieces)i,
                     max_col_norm: %(h3_col_norm)f,
                     init_bias: %(h3_bias)f,
                  },
@@ -77,11 +79,13 @@
         init_momentum: .5,
         monitoring_dataset:
             {
-                'test' : &valid !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {
-        preprocessed_dataset: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/test.pkl",
-        preprocessor: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/preprocessor.pkl",
-        axes: ['c', 0, 1, 'b']
-                          },
+            'valid' : &valid !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {
+            preprocessed_dataset: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/train.pkl",
+            preprocessor: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/preprocessor.pkl",
+            start: 40000,
+            stop: 50000,
+            axes: ['c', 0, 1, 'b']
+                              },
             },
         cost: !obj:pylearn2.costs.mlp.dropout.Dropout {
             input_include_probs: { 'h0' : .8 },
@@ -92,6 +96,10 @@
         },
     },
     extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_misclass',
+             save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}_best.pkl"
+        },
         !obj:pylearn2.training_algorithms.sgd.MomentumAdjustor {
             start: 1,
             saturate: %(msat)i,

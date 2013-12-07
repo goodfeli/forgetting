@@ -39,6 +39,10 @@
         },
     },
     extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_both_y_misclass',
+             save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}_best.pkl"
+        },
         !obj:pylearn2.training_algorithms.sgd.MomentumAdjustor {
             start: 1,
             saturate: %(msat)i,
@@ -50,6 +54,6 @@
             decay_factor: %(decay)f,
         },
     ],
-    #save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}.pkl",
-    #save_freq: 1
+    save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}.pkl",
+    save_freq: 1
 }
