@@ -1,0 +1,59 @@
+!obj:pylearn2.train.Train {
+        dataset: !obj:pylearn2.datasets.svhn.SVHN_On_Memory {
+            which_set: 'train',
+            start: 0,
+            stop: 50000,
+    },
+    model: !obj:pylearn2.monitor.push_monitor {
+        model: !pkl: "task_0_best.pkl",
+        name: "monitor_first"
+    },
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
+        learning_rate: %(learning_rate)f,
+        init_momentum: .5,
+        monitoring_dataset:
+            {
+            'valid_both': !obj:forgetting.concat {
+                datasets: [
+                !obj:pylearn2.datasets.svhn.SVHN_On_Memory {
+                    which_set: 'train',
+                    start: 50000,
+                    stop: 60000,
+                    },]
+                },
+            'test' :  !obj:pylearn2.datasets.svhn.SVHN_On_Memory {
+                    which_set: 'test',
+            },
+            'test_old' : !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {
+                    preprocessed_dataset: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/test.pkl",
+                    preprocessor: !pkl: "${PYLEARN2_DATA_PATH}/cifar10/pylearn2_gcn_whitened/preprocessor.pkl",
+                    axes: ['c', 0, 1, 'b']
+                },
+            },
+        cost: !obj:pylearn2.costs.mlp.dropout.Dropout {
+            input_include_probs: { 'h0' : .8 },
+            input_scales: { 'h0' : 1. }
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.EpochCounter {
+            max_epochs: 785 
+        },
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_both_y_misclass',
+             save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}_best.pkl"
+        },
+        !obj:pylearn2.training_algorithms.sgd.MomentumAdjustor {
+            start: 1,
+            saturate: %(msat)i,
+            final_momentum: %(final_momentum)f,
+        },
+        !obj:pylearn2.training_algorithms.sgd.LinearDecayOverEpoch {
+            start: 1,
+            saturate: %(lr_sat)d,
+            decay_factor: %(decay)f,
+        },
+    ],
+    save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}.pkl",
+    save_freq: 1
+}
