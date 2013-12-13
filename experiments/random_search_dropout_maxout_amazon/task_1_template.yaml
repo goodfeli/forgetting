@@ -1,4 +1,3 @@
-# Author: Ian Goodfellow
 !obj:pylearn2.train.Train {
     dataset: &train !obj:forgetting.datasets.amazon.AmazonSmall {
         which_set: 'train',
