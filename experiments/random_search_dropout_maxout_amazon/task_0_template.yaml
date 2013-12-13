@@ -1,10 +1,13 @@
+# Author: Ian Goodfellow
+# We train with the un-permuted version first.
+# This way after training with the permuted version, we can see if the
+# filters in the un-permuted space are still recognizable.
 !obj:pylearn2.train.Train {
-    dataset: &train !obj:forgetting.datasets.amazon.AmazonSmall {
+    dataset: &train !obj:pylearn2.datasets.mnist.MNIST {
         which_set: 'train',
-        category: 'kitchen',
         one_hot: 1,
         start: 0,
-        stop: 1000
+        stop: 50000
     },
     model: !obj:pylearn2.models.mlp.MLP {
         layers: [ !obj:pylearn2.models.maxout.Maxout {
@@ -24,11 +27,11 @@
                  }, !obj:pylearn2.models.mlp.Softmax {
                      max_col_norm: %(y_col_norm)f,
                      layer_name: 'y',
-                     n_classes: 2,
+                     n_classes: 10,
                      %(y_init)s
                  }
                 ],
-        nvis: 5000,
+        nvis: 784,
     },
     algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
         batch_size: 100,
@@ -37,18 +40,16 @@
         monitoring_dataset:
             {
                 'train' : *train,
-                'valid' : !obj:forgetting.datasets.amazon.AmazonSmall {
-                    which_set: 'train',
-                    category: 'kitchen',
-                    one_hot: 1,
-                    start: 1000,
-                    stop: 1600
-                },
-                'test' : !obj:forgetting.datasets.amazon.AmazonSmall {
-                    which_set: 'test',
-                    category: 'kitchen',
-                    one_hot: 1,
-                },
+                'valid' : !obj:pylearn2.datasets.mnist.MNIST {
+                              which_set: 'train',
+                              one_hot: 1,
+                              start: 50000,
+                              stop:  60000
+                          },
+                'test'  : !obj:pylearn2.datasets.mnist.MNIST {
+                              which_set: 'test',
+                              one_hot: 1,
+                          }
             },
         cost: !obj:pylearn2.costs.cost.SumOfCosts { costs: [
             !obj:pylearn2.costs.mlp.dropout.Dropout {
