@@ -45,3 +45,15 @@ if __name__ == "__main__":
             path = "{}in-domain-{}-{}-{}-y.npy".format(SAVE_PATH, set, cat, NUM_FEAT)
             np.save(path, y)
 
+        #all
+        path = "{}all-domain-{}-{}.vec".format(PATH,set, NUM_FEAT)
+        x = preporcess(path, NUM_FEAT)
+        path = "{}all-domain-{}-{}.lab".format(PATH,set, NUM_FEAT)
+        y = np.loadtxt(path)
+
+        path = "{}in-domain-{}-{}-{}-x.npy".format(SAVE_PATH, set, 'all', NUM_FEAT)
+        np.save(path, x)
+        path = "{}in-domain-{}-{}-{}-y.npy".format(SAVE_PATH, set, 'all', NUM_FEAT)
+        np.save(path, y)
+
+
