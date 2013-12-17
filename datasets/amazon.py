@@ -97,5 +97,5 @@ class AmazonSmall(dense_design_matrix.DenseDesignMatrix):
 
 if __name__ == "__main__":
     for cat in AmazonSmall.valid_categories:
-        ds = AmazonSmall(which_set = 'train', category=cat)
+        ds = AmazonSmall(which_set = 'train', category=cat, num_feats=784)
         print cat, ds.X.shape
