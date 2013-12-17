@@ -5,8 +5,7 @@
         category: 'dvd',
         one_hot: 1,
         start: 0,
-        stop: 1000,
-        num_feats: 784
+        stop: 1000
     },
     model: !obj:pylearn2.monitor.push_monitor {
         model: !pkl: "task_0_best.pkl",
@@ -25,39 +24,29 @@
                             category: 'dvd',
                             one_hot: 1,
                             start: 1000,
-                            stop: 1600,
-                            num_feats: 784
+                            stop: 1600
+                        }, !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'train',
+                            category: 'kitchen',
+                            one_hot: 1,
+                            start: 1000,
+                            stop: 1600
                         },
-                            !obj:pylearn2.datasets.mnist.MNIST {
-                              which_set: 'train',
-                              one_hot: 1,
-                              start: 50000,
-                              stop:  60000,
-                              preprocessor: !obj:forgetting.LimitClass {
-                                    include_classes: [2, 9]
-                              }
-                          },
                           ]
                 },
                 'test'  : !obj:forgetting.datasets.amazon.AmazonSmall {
                             which_set: 'test',
                             category: 'dvd',
                             one_hot: 1,
-                            num_feats: 784
                         },
-               'test_old' : !obj:pylearn2.datasets.mnist.MNIST {
-                              which_set: 'test',
-                              one_hot: 1,
-                              preprocessor: !obj:forgetting.LimitClass {
-                                    include_classes: [2, 9]
-                              }
+                'test_old'  : !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'test',
+                            category: 'kitchen',
+                            one_hot: 1,
                         },
             },
-
         cost: !obj:pylearn2.costs.cost.SumOfCosts { costs: [
-            !obj:pylearn2.costs.mlp.dropout.Dropout {
-                input_include_probs: { h0: .8 }
-            }
+            !obj:pylearn2.costs.mlp.Default {},
             ]
         },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
