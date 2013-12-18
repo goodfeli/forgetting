@@ -19,6 +19,13 @@ for f in fs:
     except Exception:
         print f, ' not to task 1 yet'
         continue
+    try:
+        finished_model = serial.load(os.path.join(d, f, 'task_1.pkl'))
+    except Exception:
+        print f, 'task 1 produced no post-validation output'
+    if not finished_model.monitor.training_succeeded:
+        print f, 'task 1 had a problem'
+        continue
     monitor = model.monitor
     channels = monitor.channels
     def read_channel(s):
