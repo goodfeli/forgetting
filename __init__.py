@@ -54,6 +54,25 @@ class permute_and_flip(object):
         if self.flip:
             dataset.X = 1. - X
 
+class LimitClass(object):
+    def __init__(self, include_classes):
+        self.include_classes = include_classes
+
+    def apply(self, dataset, can_fit = False):
+        indexes = []
+        for i in xrange(dataset.y.shape[0]):
+            if np.argmax(dataset.y[i]) in self.include_classes:
+                indexes.append(i)
+
+        dataset.X = dataset.X[indexes]
+        y = dataset.y[indexes]
+        # make it one_hot again
+        one_hot = np.zeros((y.shape[0], len(self.include_classes)), dtype='float32')
+        for i in xrange(y.shape[0]):
+            one_hot[i, self.include_classes.index(np.argmax(y[i]))] = 1.
+        dataset.y = one_hot
+        dataset.data_specs[0].components[1].dim = len(self.include_classes)
+
 def concat(datasets):
     Xs = map(lambda x : x.X, datasets)
     ys = map(lambda x: x.y, datasets)

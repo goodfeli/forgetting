@@ -1,0 +1,77 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !obj:forgetting.datasets.amazon.AmazonSmall {
+        which_set: 'train',
+        category: 'dvd',
+        one_hot: 1,
+        start: 0,
+        stop: 1000
+    },
+    model: !obj:pylearn2.monitor.push_monitor {
+         model: !pkl: "task_0_best.pkl",
+         name: "monitor_first"
+    },
+    algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
+        batch_size: 100,
+        learning_rate: %(learning_rate)f,
+        init_momentum: .5,
+        monitoring_dataset:
+            {
+                'train' : *train,
+                'valid_both' : !obj:forgetting.concat {
+                    datasets: [ !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'train',
+                            category: 'dvd',
+                            one_hot: 1,
+                            start: 1000,
+                            stop: 1600
+                        }, !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'train',
+                            category: 'kitchen',
+                            one_hot: 1,
+                            start: 1000,
+                            stop: 1600
+                        },
+
+                          ]
+                },
+                'test'  : !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'test',
+                            category: 'dvd',
+                            one_hot: 1,
+                        },
+                'test_old'  : !obj:forgetting.datasets.amazon.AmazonSmall {
+                            which_set: 'test',
+                            category: 'kitchen',
+                            one_hot: 1,
+                        },
+            },
+        cost: !obj:pylearn2.costs.cost.SumOfCosts { costs: [
+            !obj:pylearn2.costs.mlp.dropout.Dropout {
+                input_include_probs: { h0: .8 }
+            }
+            ]
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_both_y_misclass",
+            prop_decrease: 0.,
+            N: 100
+        }
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_both_y_misclass',
+             save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}_best.pkl"
+        }, !obj:pylearn2.training_algorithms.sgd.MomentumAdjustor {
+            start: 1,
+            saturate: %(msat)d,
+            final_momentum: %(final_momentum)f
+        },
+        !obj:pylearn2.training_algorithms.sgd.LinearDecayOverEpoch {
+            start: 1,
+            saturate: %(lr_sat)d,
+            decay_factor: %(decay)f
+        }
+    ],
+    save_path: "${PYLEARN2_TRAIN_FILE_FULL_STEM}.pkl",
+    save_freq: 1
+}
