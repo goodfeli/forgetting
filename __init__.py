@@ -55,8 +55,9 @@ class permute_and_flip(object):
             dataset.X = 1. - X
 
 class LimitClass(object):
-    def __init__(self, include_classes):
+    def __init__(self, include_classes, size = None):
         self.include_classes = include_classes
+        self.size = size
 
     def apply(self, dataset, can_fit = False):
         indexes = []
@@ -66,6 +67,13 @@ class LimitClass(object):
 
         dataset.X = dataset.X[indexes]
         y = dataset.y[indexes]
+
+        if self.size is not None:
+            index = range(self.size)
+            dataset.rng.shuffle(index)
+            dataset.X = dataset.X[index]
+            y = y[index]
+
         # make it one_hot again
         one_hot = np.zeros((y.shape[0], len(self.include_classes)), dtype='float32')
         for i in xrange(y.shape[0]):
