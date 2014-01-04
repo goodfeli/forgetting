@@ -29,7 +29,7 @@ def cloud_to_ppf(x, y, higher_better=True):
         j = len(x) - 1
         while j > i:
             rx = x[j]
-            assert rx > lx
+            #assert rx > lx
             ry = y[j]
             slope = (ry - ly) / (rx - lx)
             intercept = ly - slope * lx
@@ -52,6 +52,7 @@ def cloud_to_ppf(x, y, higher_better=True):
 
 
 
+    idpbs
     print 'done running cloud to pff'
 
     return x, y

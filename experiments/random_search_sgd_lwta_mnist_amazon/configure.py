@@ -6,7 +6,7 @@ num_jobs = 25
 
 rng = np.random.RandomState([2013, 11, 22])
 
-task_0_template = open('task_0_template.yaml', 'r').read()
+#task_0_template = open('task_0_template.yaml', 'r').read()
 task_1_template = open('task_1_template.yaml', 'r').read()
 
 for job_id in xrange(num_jobs):
@@ -52,17 +52,17 @@ for job_id in xrange(num_jobs):
     decay = 10. ** rng.uniform(-3, -1)
 
 
-    task_0_yaml_str = task_0_template % locals()
+    #task_0_yaml_str = task_0_template % locals()
 
-    serial.mkdir('exp/' + str(job_id))
-    train_file_full_stem = 'exp/'+str(job_id)+'/'
-    f = open(train_file_full_stem + 'task_0.yaml', 'w')
-    f.write(task_0_yaml_str)
-    f.close()
+    #serial.mkdir('exp/' + str(job_id))
+    train_file_full_stem = '/scratch/mmirza/results/forgetting/random_search_sgd_lwta_mnist_amazon/exp/'+str(job_id)+'/'
+    #f = open(train_file_full_stem + 'task_0.yaml', 'w')
+    #f.write(task_0_yaml_str)
+    #f.close()
 
     task_1_yaml_str = task_1_template % locals()
 
-    serial.mkdir('exp/' + str(job_id))
+    #serial.mkdir('exp/' + str(job_id))
     f = open(train_file_full_stem + 'task_1.yaml', 'w')
     f.write(task_1_yaml_str)
     f.close()

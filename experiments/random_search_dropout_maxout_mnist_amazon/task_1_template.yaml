@@ -33,7 +33,8 @@
                               start: 50000,
                               stop:  60000,
                               preprocessor: !obj:forgetting.LimitClass {
-                                    include_classes: [2, 9]
+                                    include_classes: [2, 9],
+                                    size: 600
                               }
                           },
                           ]
