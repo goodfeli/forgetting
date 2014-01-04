@@ -49,7 +49,8 @@
                               which_set: 'test',
                               one_hot: 1,
                               preprocessor: !obj:forgetting.LimitClass {
-                                    include_classes: [2, 9]
+                                    include_classes: [2, 9],
+                                    size: 600
                               }
                         },
             },
