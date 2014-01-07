@@ -57,8 +57,8 @@ def plot(data, ds):
         else:
             marker = 'd'
         color = colors[act_names.index(item['act'])]
-        min = np.argmin(np.asarray(item['val_0']) + np.asarray(item['val_1']))
-        plt.scatter(item['num_params'][min], np.asarray(item['val_0'][min]) + np.asarray(item['val_1'][min]),
+        min = np.argmin(np.asarray(item['val_1']))
+        plt.scatter(item['num_params'][min], item['val_1'][min],
                 label = "{}_{}".format(item['method'], item['act']),
                 color = color, marker = marker, s = 100)
 
@@ -79,6 +79,34 @@ def plot(data, ds):
         plt.title("Old task: MNIST (2,9), New task: Amazon (DVD)")
     plt.show()
 
+
+def print_results(data, ds):
+    print "{}: ".format(ds)
+    for item in data:
+        min = np.argmin(np.asarray(item['val_1']))
+        #print min
+        num_param = item['num_params'][min]
+        val = np.asarray(item['val_0'][min]) + np.asarray(item['val_1'][min])
+        print "{}_{}: # param: {}, val: {}".format(item['method'], item['act'], num_param, val)
+
+
+def whisker(data, ds):
+
+    vec = [item['val_0'] for item in data]
+    label = ["{}_{}".format(item['method'], item['act']) for item in data]
+    plt.boxplot(vec)
+    plt.xticks(range(1, len(label) +1), label)
+    plt.yscale('log')
+    plt.ylabel("Validation error")
+    if ds == 'mnist':
+        plt.title("MNIST")
+    elif ds == 'amazon':
+        plt.title("Amazon (Kitchen)")
+    else:
+        plt.title("MNIST (2,9)")
+
+    plt.show()
+
 if __name__ == "__main__":
 
     _, path, ds, extract = sys.argv
@@ -90,3 +118,5 @@ if __name__ == "__main__":
         data = serial.load(os.path.join(path, "{}_val_data.pkl".format(ds)))
 
     plot(data, ds)
+    #print_results(data, ds)
+    #whisker(data, ds)
