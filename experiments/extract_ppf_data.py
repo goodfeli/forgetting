@@ -38,7 +38,7 @@ for main_dir in sys.argv[1:]:
             finished_model = serial.load(os.path.join(d, f, 'task_1.pkl'))
         except Exception:
             print f, 'task 1 produced no post-validation output'
-            assert False
+            continue
         if not finished_model.monitor.training_succeeded:
             print f, 'task 1 had a problem'
             continue
@@ -60,4 +60,4 @@ for main_dir in sys.argv[1:]:
 
     i += 1
 
-serial.save('ppf.pkl', data)
+serial.save('dr_ppf.pkl', data)

@@ -51,8 +51,6 @@ def cloud_to_ppf(x, y, higher_better=True):
 
 
 
-
-    idpbs
     print 'done running cloud to pff'
 
     return x, y
